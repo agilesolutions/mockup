@@ -1,6 +1,7 @@
 package com.example.mockup.rest;
 
 import com.example.mockup.payloads.ErrorResponse;
+import com.example.mockup.payloads.SuccessResponse;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.http.HttpEntity;
@@ -25,12 +26,29 @@ public class LocalRestTemplate extends RestTemplate {
         // If match, return its payload over REST
         if (payloads.contains(id)) {
             return ResponseEntity.accepted().body(payloads.get(""));
+
+            Object content = null;
+            try {
+                content = new ObjectMapper().readValue(payloads.get(id), Object.class);
+            } catch (JsonProcessingException e) {
+                e.printStackTrace();
+            }
+
+            if (content instanceof SuccessResponse) {
+                return ResponseEntity.status(HttpStatus.OK).body(payloads.get(id));
+            } else {
+                return ResponseEntity.status(HttpStatus.CONFLICT).body(payloads.get(id));
+            }
+
+
+
         } else {
             // all other cases return an Error response, plus an HTTP conflict code
             ErrorResponse error = new ErrorResponse();
             error.setCode("500");
             error.setMessage("already exists");
             try {
+
                 return ResponseEntity.status(HttpStatus.CONFLICT).body(new ObjectMapper().writeValueAsString(error));
             } catch (JsonProcessingException e) {
                 e.printStackTrace();
