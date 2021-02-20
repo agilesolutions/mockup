@@ -1,7 +1,11 @@
 package com.example.mockup.rest;
 
+import com.example.mockup.payloads.ErrorResponse;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
@@ -17,7 +21,19 @@ public class LocalRestTemplate extends RestTemplate {
 
         String id = url.split("/")[3];
 
-        return ResponseEntity.accepted().body(payloads.get(""));
+        if (payloads.contains(id)) {
+            return ResponseEntity.accepted().body(payloads.get(""));
+        } else {
+            ErrorResponse error = new ErrorResponse();
+            error.setCode("500");
+            error.setMessage("already exists");
+            try {
+                return ResponseEntity.status(HttpStatus.CONFLICT).body(new ObjectMapper().writeValueAsString(error));
+            } catch (JsonProcessingException e) {
+                e.printStackTrace();
+            }
+        }
+
 
         //return super.exchange(url, method, requestEntity, responseType, uriVariables);
     }
