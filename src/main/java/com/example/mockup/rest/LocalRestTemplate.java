@@ -38,12 +38,13 @@ public class LocalRestTemplate extends RestTemplate {
         //return super.exchange(url, method, requestEntity, responseType, uriVariables);
     }
 
-    public void storePayload(String id, String payload) {
+    public String storePayload(String id, String payload) {
 
         if (payloads.contains(id)) {
             payloads.replace(id, payload);
         } else {
             payloads.put(id, payload);
         }
+        return payload;
     }
 }
