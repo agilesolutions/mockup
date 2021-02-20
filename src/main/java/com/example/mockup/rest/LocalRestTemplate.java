@@ -19,11 +19,14 @@ public class LocalRestTemplate extends RestTemplate {
     @Override
     public <T> ResponseEntity exchange(String url, HttpMethod method, HttpEntity<?> requestEntity, Class<T> responseType, Object... uriVariables) throws RestClientException {
 
+        // isolate the path parameter to identifying the Fenergo identifier
         String id = url.split("/")[3];
 
+        // If match, return its payload over REST
         if (payloads.contains(id)) {
             return ResponseEntity.accepted().body(payloads.get(""));
         } else {
+            // all other cases return an Error response, plus an HTTP conflict code
             ErrorResponse error = new ErrorResponse();
             error.setCode("500");
             error.setMessage("already exists");
