@@ -4,13 +4,15 @@ import com.example.mockup.payloads.ErrorResponse;
 import com.example.mockup.payloads.SuccessResponse;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.client.RestClientException;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.lang.Nullable;
+import org.springframework.web.client.*;
 
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class LocalRestTemplate extends RestTemplate {
@@ -18,15 +20,21 @@ public class LocalRestTemplate extends RestTemplate {
     private ConcurrentHashMap<String, String> payloads = new ConcurrentHashMap();
 
     @Override
-    public <T> ResponseEntity exchange(String url, HttpMethod method, HttpEntity<?> requestEntity, Class<T> responseType, Object... uriVariables) throws RestClientException {
+    public <T> ResponseEntity<T> exchange(String url, HttpMethod method, HttpEntity<?> requestEntity, ParameterizedTypeReference<T> responseType, Map<String, ?> uriVariables) throws RestClientException {
+        return super.exchange(url, method, requestEntity, responseType, uriVariables);
+    }
+
+
+    @Override
+    public <T> ResponseEntity<T> exchange(String url, HttpMethod method, @Nullable HttpEntity<?> requestEntity, Class<T> responseType, Object... uriVariables) throws RestClientException {
+        //public <T> ResponseEntity exchange(String url, HttpMethod method, HttpEntity<?> requestEntity, Class<T> responseType, Object... uriVariables) throws RestClientException {
+
 
         // isolate the path parameter to identifying the Fenergo identifier
         String id = url.split("/")[3];
 
         // If match, return its payload over REST
         if (payloads.contains(id)) {
-            return ResponseEntity.accepted().body(payloads.get(""));
-
 
             try {
 
@@ -34,25 +42,25 @@ public class LocalRestTemplate extends RestTemplate {
                     case "SuccessResponse":
                         ResponseEntity.status(HttpStatus.OK).body(payloads.get(id));
                     case "ErrorResponse":
-                        return ResponseEntity.status(HttpStatus.CONFLICT).body(payloads.get(id));
+                        throw new CustomRestException(HttpStatus.CONFLICT, "LEM already exists", payloads.get(id).getBytes(), null);
                     default:
-                        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Bad response format, please upload valid response!");
+                        throw new CustomRestException(HttpStatus.BAD_REQUEST, "Bad response format, please upload valid response!", "Bad response format, please upload valid response!".getBytes(), null);
 
                 }
+
             } catch (JsonProcessingException e) {
-                e.printStackTrace();
+                throw new CustomRestException(HttpStatus.BAD_REQUEST, "Bad response format, please upload valid response!", "Bad response format, please upload valid response!".getBytes(), null);
             }
 
         } else {
             // all other cases return an Error response, plus an HTTP conflict code
             ErrorResponse error = new ErrorResponse();
             error.setCode("500");
-            error.setMessage("already exists");
+            error.setMessage("LEM already exists");
             try {
-
-                return ResponseEntity.status(HttpStatus.CONFLICT).body(new ObjectMapper().writeValueAsString(error));
+                throw new CustomRestException(HttpStatus.CONFLICT, "LEM already exists", new ObjectMapper().writeValueAsString(error).getBytes(), null);
             } catch (JsonProcessingException e) {
-                e.printStackTrace();
+                throw new CustomRestException(HttpStatus.BAD_REQUEST, "Bad response format, please upload valid response!", "Bad response format, please upload valid response!".getBytes(), null);
             }
         }
 
