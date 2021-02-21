@@ -32,11 +32,6 @@ public class MockService {
         requestHeaders.setContentType(new MediaType("application","json"));
         HttpEntity<String> requestEntity = new HttpEntity<String>("message", requestHeaders);
 
-        //exchange(String url, HttpMethod method, @Nullable HttpEntity<?> requestEntity, Class<T> responseType, Object... uriVariables)
-        //return restController.exchange("url", HttpMethod.POST, requestEntity,String.class, null);
-        // Create a new RestTemplate instance
-        //RestTemplate restTemplate = new RestTemplate();
-
         ResponseEntity<String> responseEntity = restTemplate.exchange("url", HttpMethod.POST, requestEntity, String.class);
 
 
