@@ -27,20 +27,21 @@ public class LocalRestTemplate extends RestTemplate {
         if (payloads.contains(id)) {
             return ResponseEntity.accepted().body(payloads.get(""));
 
-            Object content = null;
+
             try {
-                content = new ObjectMapper().readValue(payloads.get(id), Object.class);
+
+                switch (new ObjectMapper().readValue(payloads.get(id), Object.class).getClass().getSimpleName()) {
+                    case "SuccessResponse":
+                        ResponseEntity.status(HttpStatus.OK).body(payloads.get(id));
+                    case "ErrorResponse":
+                        return ResponseEntity.status(HttpStatus.CONFLICT).body(payloads.get(id));
+                    default:
+                        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Bad response format, please upload valid response!");
+
+                }
             } catch (JsonProcessingException e) {
                 e.printStackTrace();
             }
-
-            if (content instanceof SuccessResponse) {
-                return ResponseEntity.status(HttpStatus.OK).body(payloads.get(id));
-            } else {
-                return ResponseEntity.status(HttpStatus.CONFLICT).body(payloads.get(id));
-            }
-
-
 
         } else {
             // all other cases return an Error response, plus an HTTP conflict code
