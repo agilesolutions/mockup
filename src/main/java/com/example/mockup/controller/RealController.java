@@ -9,16 +9,16 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
-public class MockController {
+public class RealController {
 
     @Autowired
     MockService mockService;
 
     @PostMapping("/api/core/{id}/store")
-    public ResponseEntity storePayload(@RequestParam String id,
+    public ResponseEntity getPayload(@RequestParam String id,
                                       @RequestBody String payload) {
 
-        return ResponseEntity.accepted().body(mockService.storePayload(id, payload));
+        return ResponseEntity.accepted().body(mockService.getPayload(id, payload));
 
     }
 
