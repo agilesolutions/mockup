@@ -40,7 +40,7 @@ public class MockService {
         ResponseEntity<String> responseEntity = restTemplate.exchange("url", HttpMethod.POST, requestEntity, String.class);
 
 
-        return responseEntity.getBody();;
+        return responseEntity.getBody();
     }
 
 
