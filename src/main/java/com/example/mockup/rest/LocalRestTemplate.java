@@ -27,8 +27,6 @@ public class LocalRestTemplate extends RestTemplate {
 
     @Override
     public <T> ResponseEntity<T> exchange(String url, HttpMethod method, @Nullable HttpEntity<?> requestEntity, Class<T> responseType, Object... uriVariables) throws RestClientException {
-        //public <T> ResponseEntity exchange(String url, HttpMethod method, HttpEntity<?> requestEntity, Class<T> responseType, Object... uriVariables) throws RestClientException {
-
 
         // isolate the path parameter to identifying the Fenergo identifier
         String id = url.split("/")[3];
@@ -64,8 +62,6 @@ public class LocalRestTemplate extends RestTemplate {
             }
         }
 
-
-        //return super.exchange(url, method, requestEntity, responseType, uriVariables);
     }
 
     public String storePayload(String id, String payload) {
