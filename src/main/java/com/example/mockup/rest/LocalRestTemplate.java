@@ -42,14 +42,14 @@ public class LocalRestTemplate extends RestTemplate {
                     case "SuccessResponse":
                         ResponseEntity.status(HttpStatus.OK).body(payloads.get(id));
                     case "ErrorResponse":
-                        throw new CustomRestException(HttpStatus.CONFLICT, "LEM already exists", payloads.get(id).getBytes(), null);
+                        throw new HttpClientErrorException(HttpStatus.CONFLICT, "LEM already exists", payloads.get(id).getBytes(), null);
                     default:
-                        throw new CustomRestException(HttpStatus.BAD_REQUEST, "Bad response format, please upload valid response!", "Bad response format, please upload valid response!".getBytes(), null);
+                        throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "Bad response format, please upload valid response!", "Bad response format, please upload valid response!".getBytes(), null);
 
                 }
 
             } catch (JsonProcessingException e) {
-                throw new CustomRestException(HttpStatus.BAD_REQUEST, "Bad response format, please upload valid response!", "Bad response format, please upload valid response!".getBytes(), null);
+                throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "Bad response format, please upload valid response!", "Bad response format, please upload valid response!".getBytes(), null);
             }
 
         } else {
@@ -58,9 +58,9 @@ public class LocalRestTemplate extends RestTemplate {
             error.setCode("500");
             error.setMessage("LEM already exists");
             try {
-                throw new CustomRestException(HttpStatus.CONFLICT, "LEM already exists", new ObjectMapper().writeValueAsString(error).getBytes(), null);
+                throw new HttpClientErrorException(HttpStatus.CONFLICT, "LEM already exists", new ObjectMapper().writeValueAsString(error).getBytes(), null);
             } catch (JsonProcessingException e) {
-                throw new CustomRestException(HttpStatus.BAD_REQUEST, "Bad response format, please upload valid response!", "Bad response format, please upload valid response!".getBytes(), null);
+                throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "Bad response format, please upload valid response!", "Bad response format, please upload valid response!".getBytes(), null);
             }
         }
 
