@@ -29,7 +29,7 @@ public class JaversController {
     Javers javers;
 
 
-    @PostMapping("/api/javers/{id}/save")
+    @PostMapping("/api/javers/{id}/historize")
     public ResponseEntity historize(@RequestParam String id,
                                     @RequestBody Assessment assessment) {
 
@@ -41,9 +41,11 @@ public class JaversController {
     }
 
 
-    @GetMapping("/api/javers/{id}/commit/{commit}")
-    public ResponseEntity<Snapshots> getSnapshots(@RequestParam String id,
+    @GetMapping("/api/javers/{id}/snapshot/{commit}")
+    public ResponseEntity getSnapshots(@RequestParam String id,
                                      @RequestParam int commit) {
+
+        Snapshots snapshots = null;
 
         List<Shadow<Assessment>> shadows = javers.findShadows(QueryBuilder
                 .byInstanceId("assessment", Assessment.class)
@@ -51,17 +53,32 @@ public class JaversController {
                 .withScopeDeepPlus()
                 .build());
 
-        Snapshots snapshots = Snapshots.builder()
-                .oldInstance(shadows.get(commit - 1).get())
-                .newInstance(shadows.get(commit).get())
-                .build();
+        if (shadows.size() == 0) {
+            return ResponseEntity.badRequest().body("no records found");
+        }
+
+        if (commit == 1) {
+            snapshots = Snapshots.builder()
+                    .oldInstance(shadows.get(commit).get())
+                    .newInstance(shadows.get(commit).get())
+                    .build();
+
+        } else if (commit > shadows.size()){
+            return ResponseEntity.badRequest().body("out of range");
+        } else {
+            snapshots = Snapshots.builder()
+                    .oldInstance(shadows.get(commit - 1).get())
+                    .newInstance(shadows.get(commit).get())
+                    .build();
+        }
 
 
-        return ResponseEntity.accepted().body(snapshots);
+
+        return ResponseEntity.ok().body(snapshots);
 
     }
 
-    @GetMapping("/api/javers/{id}/commit/{commit}")
+    @GetMapping("/api/javers/{id}/history")
     public ResponseEntity<List<History>> getHistory(@RequestParam String id,
                                                     @RequestParam int commit) {
 
