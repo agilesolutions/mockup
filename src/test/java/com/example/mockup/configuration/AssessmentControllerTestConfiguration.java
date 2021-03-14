@@ -54,7 +54,7 @@ public class AssessmentControllerTestConfiguration {
         return new ObjectMapper();
     }
 
-    @Bean
+    @Bean("testRestTemplate")
     public RestTemplate restTemplate() {
         RestTemplate restTemplate = new RestTemplate();
 

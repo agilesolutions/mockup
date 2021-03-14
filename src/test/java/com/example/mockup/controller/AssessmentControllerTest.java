@@ -11,9 +11,11 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.mock.http.client.MockClientHttpResponse;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.client.ExpectedCount;
@@ -36,6 +38,10 @@ import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppC
 /**
  * read https://examples.javacodegeeks.com/enterprise-java/spring/using-mockrestserviceserver-test-rest-client/
  * https://stackoverflow.com/questions/46269598/springboottest-with-mockmvcbuilders-stand-alone-setup-is-not-loading-my-controll
+ *
+ *
+ * https://www.baeldung.com/restclienttest-in-spring-boot
+ *
  */
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {AssessmentControllerTestConfiguration.class})
@@ -43,6 +49,7 @@ import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppC
 public class AssessmentControllerTest {
 
     @Autowired
+    @Qualifier("testRestTemplate")
     private RestTemplate restTemplate;
 
     @Autowired
@@ -57,7 +64,8 @@ public class AssessmentControllerTest {
 
     @BeforeAll
     public void init() {
-        mockServer = MockRestServiceServer.createServer(restTemplate);
+        mockServer = MockRestServiceServer.bindTo(restTemplate).build();
+
         this.mockMvc = MockMvcBuilders
                 .standaloneSetup(new AssessmentController())
                 .setControllerAdvice(new ControllerAdvisor())
@@ -82,15 +90,21 @@ public class AssessmentControllerTest {
 
         Assessment assessment = Assessment.builder().id(111).description("").status("").phase("").build();
 
-        mockServer.expect(ExpectedCount.once(),
-                requestTo(new URI("/api/core/111/store")))
+        mockServer.expect(requestTo("/api/core/111/store"))
                 .andExpect(method(HttpMethod.POST))
                 .andExpect(content().json(objectMapper.writeValueAsString(assessment)))
-                .andRespond(customResponseCreator);
+                .andRespond(r -> {
+
+                    String token = r.getHeaders().get("Authorization").get(0);
+
+                    return new MockClientHttpResponse(objectMapper.writeValueAsBytes(Assessment.builder().build()), HttpStatus.CONFLICT);
+
+                });
 //                        .andRespond(withStatus(HttpStatus.OK)
 //                                .contentType(MediaType.APPLICATION_JSON)
 //                                .body(objectMapper.writeValueAsString(Assessment.builder().build())));
 
+        mockServer.verify();
 
     }
 
