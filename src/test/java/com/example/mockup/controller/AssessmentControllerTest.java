@@ -35,6 +35,7 @@ import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppC
 
 /**
  * read https://examples.javacodegeeks.com/enterprise-java/spring/using-mockrestserviceserver-test-rest-client/
+ * https://stackoverflow.com/questions/46269598/springboottest-with-mockmvcbuilders-stand-alone-setup-is-not-loading-my-controll
  */
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {AssessmentControllerTestConfiguration.class})
@@ -47,12 +48,12 @@ public class AssessmentControllerTest {
     @Autowired
     ObjectMapper objectMapper;
 
+    @Autowired
+    AssessmentControllerTestConfiguration.CustomResponseCreator customResponseCreator;
+
     private MockRestServiceServer mockServer;
 
     private MockMvc mockMvc;
-
-    @Autowired
-    private WebApplicationContext webApplicationContext;
 
     @BeforeAll
     public void init() {
@@ -85,10 +86,10 @@ public class AssessmentControllerTest {
                 requestTo(new URI("/api/core/111/store")))
                 .andExpect(method(HttpMethod.POST))
                 .andExpect(content().json(objectMapper.writeValueAsString(assessment)))
-                .andRespond(withStatus(HttpStatus.OK)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .body(objectMapper.writeValueAsString(Assessment.builder().build()))
-                );
+                .andRespond(customResponseCreator);
+//                        .andRespond(withStatus(HttpStatus.OK)
+//                                .contentType(MediaType.APPLICATION_JSON)
+//                                .body(objectMapper.writeValueAsString(Assessment.builder().build())));
 
 
     }
