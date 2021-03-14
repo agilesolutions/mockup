@@ -1,7 +1,10 @@
 package com.example.mockup.configuration;
 
+import com.example.mockup.controller.AssessmentController;
+import com.example.mockup.exceptions.ControllerAdvisor;
 import com.example.mockup.model.Assessment;
 import com.example.mockup.utils.JwtUtils;
+import com.example.mockup.validators.AssessmentValidator;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.Claims;
 import org.springframework.context.annotation.Bean;
@@ -50,6 +53,17 @@ public class AssessmentControllerTestConfiguration {
     }
 
     @Bean
+    public AssessmentController assessmentController() {
+        return new AssessmentController();
+    }
+
+    @Bean
+    ControllerAdvisor controllerAdvisor() {
+        return new ControllerAdvisor();
+    }
+
+
+    @Bean
     public ObjectMapper objectMapper() {
         return new ObjectMapper();
     }
@@ -63,6 +77,11 @@ public class AssessmentControllerTestConfiguration {
         restTemplate.setInterceptors(interceptors);
 
         return restTemplate;
+    }
+
+    @Bean
+    public AssessmentValidator assessmentValidator() {
+        return new AssessmentValidator();
     }
 
     @Bean

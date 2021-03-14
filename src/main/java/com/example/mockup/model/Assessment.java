@@ -4,10 +4,11 @@ import lombok.Builder;
 import lombok.Data;
 
 import javax.validation.constraints.NotBlank;
+import java.io.Serializable;
 
 @Builder
 @Data
-public class Assessment {
+public class Assessment implements Serializable {
 
     private int id;
 
