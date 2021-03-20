@@ -1,19 +1,15 @@
 package com.example.mockup.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
 import javax.validation.constraints.NotBlank;
-import java.io.Serializable;
 
-@Builder
-@Data
-@AllArgsConstructor
+
 public class Assessment {
 
-    private int id;
+    public Assessment() {
+        super();
+    }
+
+    private Long id;
 
     @NotBlank
     private String phase;
@@ -23,4 +19,36 @@ public class Assessment {
 
     @NotBlank
     private String description;
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getPhase() {
+        return phase;
+    }
+
+    public void setPhase(String phase) {
+        this.phase = phase;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
 }

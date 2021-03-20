@@ -25,7 +25,7 @@ public class JaversService {
     private final Javers javers;
 
     public Assessment historize(@RequestParam String id,
-                                    @RequestBody Assessment assessment) {
+                                @RequestBody Assessment assessment) {
 
         javers.commit("assessment", assessment,
                 Map.of("phase", assessment.getPhase(), "status", assessment.getStatus()));

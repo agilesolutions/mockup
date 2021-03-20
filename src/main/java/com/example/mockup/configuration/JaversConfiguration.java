@@ -1,5 +1,6 @@
 package com.example.mockup.configuration;
 
+
 import com.example.mockup.model.Assessment;
 import org.javers.core.Javers;
 import org.javers.core.metamodel.clazz.EntityDefinition;

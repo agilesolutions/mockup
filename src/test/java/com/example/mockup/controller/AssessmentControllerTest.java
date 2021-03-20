@@ -2,6 +2,7 @@ package com.example.mockup.controller;
 
 import com.example.mockup.configuration.AssessmentControllerTestConfiguration;
 import com.example.mockup.exceptions.ControllerAdvisor;
+
 import com.example.mockup.model.Assessment;
 import com.example.mockup.service.AssessmentService;
 import com.example.mockup.validators.AssessmentValidator;
@@ -18,8 +19,6 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-
-import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasItem;
@@ -72,7 +71,9 @@ public class AssessmentControllerTest {
     @Test
     public void whenPostResponseThenFail() throws Exception {
 
-        Assessment assessment = Assessment.builder().id(111).description("dd").status("ss").phase("pp").build();
+        Assessment assessment = new Assessment();
+
+        assessment.setId(111L);
 
         when(assessmentService.saveAssessment(assessment)).thenReturn(assessment);
 

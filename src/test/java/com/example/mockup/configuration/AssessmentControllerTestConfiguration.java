@@ -20,19 +20,12 @@ import org.springframework.http.client.ClientHttpRequestExecution;
 import org.springframework.http.client.ClientHttpRequestInterceptor;
 import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.mock.http.client.MockClientHttpResponse;
-import org.springframework.test.web.client.RequestExpectation;
-import org.springframework.test.web.client.RequestMatcher;
-import org.springframework.test.web.client.ResponseActions;
 import org.springframework.test.web.client.ResponseCreator;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.client.RestTemplate;
 
 import java.io.IOException;
 import java.security.*;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 
 @Configuration
@@ -110,7 +103,7 @@ public class AssessmentControllerTestConfiguration {
 
             Claims claims = JwtUtils.verifyToken(token, PUBLIC_KEY);
 
-            return new MockClientHttpResponse(objectMapper().writeValueAsBytes(Assessment.builder().build()), HttpStatus.CONFLICT);
+            return new MockClientHttpResponse(objectMapper().writeValueAsBytes(new Assessment()), HttpStatus.CONFLICT);
         }
     }
 
