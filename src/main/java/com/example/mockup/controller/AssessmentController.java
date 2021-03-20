@@ -1,7 +1,9 @@
 package com.example.mockup.controller;
 
 import com.example.mockup.model.Assessment;
+import com.example.mockup.service.AssessmentService;
 import com.example.mockup.validators.AssessmentValidator;
+import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.WebDataBinder;
@@ -11,10 +13,12 @@ import javax.validation.Valid;
 
 
 @RestController
+@AllArgsConstructor
 public class AssessmentController {
 
-    @Autowired
-    private AssessmentValidator assessmentValidator;
+    private static AssessmentService assessmentService;
+
+    private static AssessmentValidator assessmentValidator;
 
     @InitBinder("productCreateRequest")
     public void setupBinder(WebDataBinder binder) {
@@ -22,11 +26,11 @@ public class AssessmentController {
     }
 
 
-    @PostMapping(path = "/api/core/store", consumes = "application/json", produces = "application/json")
+    @RequestMapping(value = { "/api/v1/core/store" }, method = { RequestMethod.POST })
     public ResponseEntity<Assessment> storeAssessment(
                                      @RequestBody @Valid Assessment assessment) {
 
-        return ResponseEntity.accepted().body(assessment);
+        return ResponseEntity.accepted().body(assessmentService.saveAssessment(assessment));
 
     }
 }
