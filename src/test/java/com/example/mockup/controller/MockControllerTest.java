@@ -20,6 +20,8 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.concurrent.atomic.AtomicReference;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.test.web.client.ExpectedCount.once;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.*;
@@ -57,43 +59,30 @@ public class MockControllerTest {
     @Test
     public void whenGetResponseThenSucceed() throws Exception {
 
-        Assessment assessment = new Assessment();
-        assessment.setId(111L);
+        final AtomicReference<Assessment> assessmentRef = new AtomicReference<>(Assessment.builder().id(111L).build());
 
         mockServer.expect(requestTo("/api/assessment/save"))
-                .andExpect(content().json(objectMapper.writeValueAsString(assessment)))
+                .andExpect(content().json(objectMapper.writeValueAsString(assessmentRef.get())))
                 .andExpect(method(HttpMethod.POST))
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andRespond(withSuccess(objectMapper.writeValueAsString(assessment), MediaType.APPLICATION_JSON));
-
-        assessment = mockService.saveAssessment(Assessment.builder().id(111L).build());
-
-        //String result = service.addComment("cute puppy");
-        //System.out.println("testAddComment: " + result);
-
-        mockServer.verify();
-        assertEquals(111L, assessment.getId());
-
-/*
-        mockServer.expect(once(),requestTo("http://localhost/api/core/store"))
-                .andExpect(clientHttpRequest -> {
-                    clientHttpRequest.getBody().
-                })
-                .andExpect(method(HttpMethod.POST))
-                .andExpect(content().bytes(objectMapper.writeValueAsBytes(assessment)))
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andRespond(r -> {
 
+
+
                     String token = r.getHeaders().get("Authorization").get(0);
 
-                    return new MockClientHttpResponse(objectMapper.writeValueAsBytes(new Assessment()), HttpStatus.CONFLICT);
+                    MockClientHttpResponse response = new MockClientHttpResponse(objectMapper.writeValueAsBytes(assessmentRef.get()), HttpStatus.OK);
+
+                    response.getHeaders().setContentType(MediaType.APPLICATION_JSON);
+
+                    return response;
 
                 });
-                */
 
-//                        .andRespond(withStatus(HttpStatus.OK)
-//                                .contentType(MediaType.APPLICATION_JSON)
-//                                .body(objectMapper.writeValueAsString(Assessment.builder().build())));
+        Assessment assessment = mockService.saveAssessment(Assessment.builder().id(111L).build());
+
+        mockServer.verify();
+        assertEquals(111L, assessment.getId());
 
         mockServer.verify();
 
