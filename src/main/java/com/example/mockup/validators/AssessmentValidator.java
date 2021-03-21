@@ -12,6 +12,11 @@ import javax.validation.Validator;
 /**
  * https://stackoverflow.com/questions/14817281/spring-validation-annotations-being-ignored-when-using-custom-validator
  * https://stackoverflow.com/questions/28702809/how-to-manually-trigger-spring-validation
+ *
+ * must read
+ *
+ * https://stackoverflow.com/questions/39001106/implementing-custom-validation-logic-for-a-spring-boot-endpoint-using-a-combinat
+ * https://github.com/pavelfomin/spring-boot-rest-example/tree/feature/custom-validator
  */
 @Component
 public class AssessmentValidator extends SpringValidatorAdapter {
@@ -36,7 +41,7 @@ public class AssessmentValidator extends SpringValidatorAdapter {
 
         Assessment assessment = (Assessment) target;
 
-     //   errors.reject(HttpStatus.CONFLICT.getReasonPhrase());
+        errors.reject(HttpStatus.CONFLICT.getReasonPhrase());
 
     }
 

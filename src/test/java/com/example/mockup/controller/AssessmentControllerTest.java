@@ -84,15 +84,19 @@ public class AssessmentControllerTest {
                 .andDo(print())
                 .andExpect(status().is4xxClientError())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.fieldErrors.field[0]").value("phase"));
+                /*
+                *  Body = {"fieldErrors":[{"field":"phase","code":"NotBlank","rejectedValue":null},{"field":"description","code":"NotBlank","rejectedValue":null},{"field":"status","code":"NotBlank","rejectedValue":null}],"globalErrors":[]}
+                 */
+                .andExpect(jsonPath("$.fieldErrors[0].field").value("phase"));
 
 
 
-        ArgumentCaptor<Assessment> argumentCaptor = ArgumentCaptor.forClass(Assessment.class);
+        /*
+                ArgumentCaptor<Assessment> argumentCaptor = ArgumentCaptor.forClass(Assessment.class);
         verify(assessmentService).saveAssessment(argumentCaptor.capture());
         Assessment capturedArgument = argumentCaptor.<Assessment> getValue();
         Assertions.assertEquals(999,argumentCaptor.getValue().getId());
-
+*/
 
 
     }
