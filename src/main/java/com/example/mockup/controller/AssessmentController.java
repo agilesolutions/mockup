@@ -16,9 +16,9 @@ import javax.validation.Valid;
 @AllArgsConstructor
 public class AssessmentController {
 
-    private static AssessmentService assessmentService;
+    AssessmentService assessmentService;
 
-    private static AssessmentValidator assessmentValidator;
+    AssessmentValidator assessmentValidator;
 
     @InitBinder("productCreateRequest")
     public void setupBinder(WebDataBinder binder) {

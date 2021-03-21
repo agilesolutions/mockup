@@ -82,12 +82,9 @@ public class AssessmentControllerTest {
                 .content(objectMapper.writeValueAsString(assessment))
                 .accept(MediaType.APPLICATION_JSON))
                 .andDo(print())
-                .andExpect(status().isBadRequest())
+                .andExpect(status().is4xxClientError())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(header().string("Location", "/api/account/12345"))
-                .andExpect(jsonPath("$.accountId").value("12345"))
-                .andExpect(jsonPath("$.accountType").value("SAVINGS"))
-                .andExpect(jsonPath("$.balance").value(5000));
+                .andExpect(jsonPath("$.fieldErrors.field[0]").value("phase"));
 
 
 
@@ -100,6 +97,38 @@ public class AssessmentControllerTest {
 
     }
 
+
+    @Test
+    public void whenPostResponseThenSucceed() throws Exception {
+
+        Assessment assessment = Assessment.builder()
+                .id(111L)
+                .phase("phase1")
+                .status("status1")
+                .description("descripion1")
+                .build();
+
+        when(assessmentService.saveAssessment(assessment)).thenReturn(assessment);
+
+        mockMvc.perform(post("/api/v1/core/store")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(assessment))
+                .accept(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isAccepted())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.id").value("111"));
+
+
+
+        ArgumentCaptor<Assessment> argumentCaptor = ArgumentCaptor.forClass(Assessment.class);
+        verify(assessmentService).saveAssessment(argumentCaptor.capture());
+        Assessment capturedArgument = argumentCaptor.<Assessment> getValue();
+        Assertions.assertEquals(111,argumentCaptor.getValue().getId());
+
+
+
+    }
 
 
 }
