@@ -31,23 +31,7 @@ import java.util.List;
 @Configuration
 public class AssessmentControllerTestConfiguration {
 
-    private final static PrivateKey PRIVATE_KEY;
-    private final static PublicKey PUBLIC_KEY;
 
-    static {
-
-        KeyPairGenerator keyPairGenerator = null;
-        try {
-            keyPairGenerator = KeyPairGenerator.getInstance("RSA");
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-        }
-        keyPairGenerator.initialize(2048);
-        KeyPair keyPair = keyPairGenerator.generateKeyPair();
-        PRIVATE_KEY = keyPair.getPrivate();
-        PUBLIC_KEY = keyPair.getPublic();
-
-    }
 
     @Bean
     public AssessmentController assessmentController() {
@@ -64,18 +48,6 @@ public class AssessmentControllerTestConfiguration {
         return new ControllerAdvisor();
     }
 
-
-    @Bean("testRestTemplate")
-    public RestTemplate restTemplate() {
-        RestTemplate restTemplate = new RestTemplate();
-
-        List<ClientHttpRequestInterceptor> interceptors = restTemplate.getInterceptors();
-        interceptors.add(new RestTemplateInterceptor());
-        restTemplate.setInterceptors(interceptors);
-
-        return restTemplate;
-    }
-
     @Bean
     public AssessmentValidator assessmentValidator() {
         return new AssessmentValidator();
@@ -87,41 +59,5 @@ public class AssessmentControllerTestConfiguration {
         return new ObjectMapper().registerModule(new JavaTimeModule()).configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
 
     }
-
-    @Bean
-    public CustomResponseCreator customResponseCreator() {
-        return new CustomResponseCreator();
-    }
-
-
-    public class CustomResponseCreator implements ResponseCreator {
-
-        @Override
-        public ClientHttpResponse createResponse(ClientHttpRequest clientHttpRequest) throws IOException {
-
-            String token = clientHttpRequest.getHeaders().get("Authorization").get(0);
-
-            Claims claims = JwtUtils.verifyToken(token, PUBLIC_KEY);
-
-            return new MockClientHttpResponse(objectMapper().writeValueAsBytes(new Assessment()), HttpStatus.CONFLICT);
-        }
-    }
-
-    public class RestTemplateInterceptor implements ClientHttpRequestInterceptor {
-
-        @Override
-        public ClientHttpResponse intercept(HttpRequest request, byte[] body, ClientHttpRequestExecution execution) throws IOException {
-
-
-            String token = JwtUtils.createSignedJwt(PRIVATE_KEY);
-
-            request.getHeaders().add("Authorization", "Bearer " + token);
-
-
-            return execution.execute(request, body);
-
-        }
-    }
-
 
 }

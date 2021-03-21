@@ -6,6 +6,7 @@ import lombok.*;
 import javax.validation.constraints.NotBlank;
 
 
+@Builder
 @Data
 @NoArgsConstructor(force = true, access = AccessLevel.PUBLIC)
 @AllArgsConstructor
