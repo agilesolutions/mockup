@@ -22,7 +22,7 @@ public class AssessmentControllerTestConfiguration {
 
     @Bean
     public AssessmentController assessmentController() {
-        return new AssessmentController(assessmentService(), assessmentValidator());
+        return new AssessmentController(assessmentService());
     }
 
     @Bean
@@ -33,7 +33,7 @@ public class AssessmentControllerTestConfiguration {
 
     @Bean
     public AssessmentValidator assessmentValidator() {
-        return new AssessmentValidator(Validation.buildDefaultValidatorFactory().getValidator());
+        return new AssessmentValidator();
     }
 
     @Bean

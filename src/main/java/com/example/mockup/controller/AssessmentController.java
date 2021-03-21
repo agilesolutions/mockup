@@ -18,11 +18,10 @@ public class AssessmentController {
 
     AssessmentService assessmentService;
 
-    AssessmentValidator assessmentValidator;
 
-    @InitBinder("productCreateRequest")
-    public void setupBinder(WebDataBinder binder) {
-        binder.addValidators(assessmentValidator);
+    @InitBinder("assessment")
+    protected void initBinder(WebDataBinder binder) {
+        binder.addValidators(new AssessmentValidator());
     }
 
 

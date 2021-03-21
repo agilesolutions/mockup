@@ -18,7 +18,7 @@ public class Assessment {
     @NotBlank
     private String phase;
 
-    @NotBlank
+
     private String status;
 
     @NotBlank

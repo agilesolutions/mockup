@@ -40,8 +40,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class AssessmentControllerTest {
 
-    @Autowired
-    AssessmentValidator assessmentValidator;
+
 
     @Autowired
     AssessmentController assessmentController;
@@ -63,7 +62,7 @@ public class AssessmentControllerTest {
         this.mockMvc = MockMvcBuilders
                 .standaloneSetup(assessmentController)
                 .setControllerAdvice(controllerAdvisor)
-                .setValidator(assessmentValidator)
+                .setValidator(new AssessmentValidator())
                 //.alwaysDo(print())
                 .build();
     }
@@ -87,7 +86,7 @@ public class AssessmentControllerTest {
                 /*
                 *  Body = {"fieldErrors":[{"field":"phase","code":"NotBlank","rejectedValue":null},{"field":"description","code":"NotBlank","rejectedValue":null},{"field":"status","code":"NotBlank","rejectedValue":null}],"globalErrors":[]}
                  */
-                .andExpect(jsonPath("$.fieldErrors[0].field").value("phase"));
+                .andExpect(jsonPath("$.fieldErrors[0].field").value("status"));
 
 
 
